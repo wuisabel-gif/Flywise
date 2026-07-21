@@ -15,6 +15,19 @@ The repository includes:
 - Unit tests for ranking, flexibility filtering, and agent-request generation.
 - A local Codex plugin that bundles the Flywise MCP connection with a reusable flight-recovery skill.
 
+## Architecture
+
+Flywise keeps flight-search and equivalence logic in one API and MCP service, then exposes it through multiple passenger and agent experiences:
+
+```text
+                    Flywise API + MCP
+                           │
+       ┌───────────┬───────┼─────────┬───────────┐
+       ▼           ▼       ▼         ▼           ▼
+    Website     ChatGPT   Codex     Cursor      Claude
+ passenger UI   app UI    plugin    plugin      MCP
+```
+
 ## Codex plugin
 
 The repo-local plugin lives in `plugins/flywise-flight-recovery`. It teaches Codex how to collect an original itinerary, search equivalent replacements, distinguish public price from exchange cost, compare fare conditions, and draft a request for an airline agent.
