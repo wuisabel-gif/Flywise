@@ -13,6 +13,20 @@ The repository includes:
 - Demo inventory that is clearly labeled and never substituted for another route after a live-search failure.
 - An MCP Apps server with data-first search tools and a separate render tool for ChatGPT.
 - Unit tests for ranking, flexibility filtering, and agent-request generation.
+- A local Codex plugin that bundles the Flywise MCP connection with a reusable flight-recovery skill.
+
+## Codex plugin
+
+The repo-local plugin lives in `plugins/flywise-flight-recovery`. It teaches Codex how to collect an original itinerary, search equivalent replacements, distinguish public price from exchange cost, compare fare conditions, and draft a request for an airline agent.
+
+Start the local MCP server before using the plugin:
+
+```bash
+npm run build
+npm run dev:server
+```
+
+The plugin connects to `http://127.0.0.1:3000/mcp`. Its marketplace catalog is stored in `.agents/plugins/marketplace.json` so the plugin can be installed and tested from this repository.
 
 ## Local development
 

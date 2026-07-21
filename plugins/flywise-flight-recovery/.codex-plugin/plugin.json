@@ -1,0 +1,29 @@
+{
+  "name": "flywise-flight-recovery",
+  "version": "0.1.0",
+  "description": "Find equivalent replacement flights after cancellations, delays, and schedule changes.",
+  "author": {
+    "name": "Flywise",
+    "url": "https://github.com/wuisabel-gif"
+  },
+  "homepage": "https://wuisabel-gif.github.io/Flywise/",
+  "repository": "https://github.com/wuisabel-gif/Flywise",
+  "keywords": ["travel", "flights", "rebooking", "disruption", "duffel"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Flywise Flight Recovery",
+    "shortDescription": "Equivalent flights after disruptions",
+    "longDescription": "Search and compare replacement flights while preserving schedule, cabin, baggage, routing quality, and ticket value.",
+    "developerName": "Flywise",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read"],
+    "websiteURL": "https://wuisabel-gif.github.io/Flywise/",
+    "defaultPrompt": [
+      "Find equivalent replacements for my cancelled flight.",
+      "Compare rebooking options while preserving my cabin and bags.",
+      "Draft a request for airline reaccommodation."
+    ],
+    "brandColor": "#2563EB"
+  },
+  "mcpServers": "./.mcp.json"
+}

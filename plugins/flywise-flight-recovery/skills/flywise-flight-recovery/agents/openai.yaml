@@ -1,0 +1,13 @@
+interface:
+  display_name: "Flywise Flight Recovery"
+  short_description: "Find equivalent flights after disruptions"
+  default_prompt: "Use $flywise-flight-recovery to find equivalent replacement flights for my disrupted trip."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "flywise"
+      description: "Search and compare Flywise replacement-flight offers"
+      transport: "streamable_http"
+      url: "http://127.0.0.1:3000/mcp"
+policy:
+  allow_implicit_invocation: true
