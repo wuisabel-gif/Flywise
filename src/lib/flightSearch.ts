@@ -6,9 +6,9 @@ const apiBaseUrl = ((import.meta as ImportMeta & { env?: { VITE_FLYWISE_API_URL?
 export function createBookingFromQuery(query: FlightSearchQuery, preferences: SearchPreferences): OriginalBooking {
   const origin = findAirport(query.origin);
   const destination = findAirport(query.destination);
-  const departure = `${query.departureDate}T12:00:00`;
-  const arrival = new Date(`${query.departureDate}T12:00:00Z`);
-  arrival.setUTCDate(arrival.getUTCDate() + 1);
+  const departure = `${query.departureDate}T${query.departureTime}:00`;
+  const arrival = new Date(`${departure}Z`);
+  arrival.setUTCHours(arrival.getUTCHours() + 12);
 
   return {
     id: `search-${query.origin}-${query.destination}-${query.departureDate}`,
@@ -18,15 +18,15 @@ export function createBookingFromQuery(query: FlightSearchQuery, preferences: Se
     destinationCity: destination?.city ?? query.destination.toUpperCase(),
     departure,
     arrival: arrival.toISOString().replace(".000Z", ""),
-    airline: "Original airline",
-    flightNumber: "Your flight",
+    airline: query.airline,
+    flightNumber: query.flightNumber,
     cabin: preferences.preferredCabin,
-    checkedBags: preferences.preferredCabin === "Business" || preferences.preferredCabin === "First" ? 2 : 1,
+    checkedBags: query.checkedBags,
     connections: 0,
-    paidAmount: 1,
+    paidAmount: query.originalFare,
     passengerCount: query.passengerCount,
     disruptionType: "cancelled",
-    bookingReference: "Add reference",
+    bookingReference: query.bookingReference,
   };
 }
 

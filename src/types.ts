@@ -72,7 +72,13 @@ export interface FlightSearchQuery {
   origin: string;
   destination: string;
   departureDate: string;
+  departureTime: string;
   passengerCount: number;
+  airline: string;
+  flightNumber: string;
+  bookingReference: string;
+  originalFare: number;
+  checkedBags: number;
 }
 
 export interface FlightSearchResponse {

@@ -28,12 +28,19 @@ const searchQuerySchema = z.object({
   origin: z.string().trim().length(3).transform((value) => value.toUpperCase()),
   destination: z.string().trim().length(3).transform((value) => value.toUpperCase()),
   departureDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  departureTime: z.string().regex(/^\d{2}:\d{2}$/),
   passengerCount: z.number().int().min(1).max(9).default(1),
+  airline: z.string().trim().min(2).max(80),
+  flightNumber: z.string().trim().min(2).max(16),
+  bookingReference: z.string().trim().max(24),
+  originalFare: z.number().min(0),
+  checkedBags: z.number().int().min(0).max(10),
 });
 
 function createSearchBooking(query: FlightSearchQuery, preferences: SearchPreferences): OriginalBooking {
-  const arrival = new Date(`${query.departureDate}T12:00:00Z`);
-  arrival.setUTCDate(arrival.getUTCDate() + 1);
+  const departure = `${query.departureDate}T${query.departureTime}:00`;
+  const arrival = new Date(`${departure}Z`);
+  arrival.setUTCHours(arrival.getUTCHours() + 12);
   return {
     ...originalBooking,
     id: `search-${query.origin}-${query.destination}-${query.departureDate}`,
@@ -41,15 +48,15 @@ function createSearchBooking(query: FlightSearchQuery, preferences: SearchPrefer
     originCity: findAirport(query.origin)?.city ?? query.origin,
     destination: query.destination,
     destinationCity: findAirport(query.destination)?.city ?? query.destination,
-    departure: `${query.departureDate}T12:00:00`,
+    departure,
     arrival: arrival.toISOString().replace(".000Z", ""),
-    airline: "Original airline",
-    flightNumber: "Your flight",
+    airline: query.airline,
+    flightNumber: query.flightNumber,
     cabin: preferences.preferredCabin,
-    checkedBags: preferences.preferredCabin === "Business" || preferences.preferredCabin === "First" ? 2 : 1,
+    checkedBags: query.checkedBags,
     passengerCount: query.passengerCount,
-    paidAmount: 1,
-    bookingReference: "Add reference",
+    paidAmount: query.originalFare,
+    bookingReference: query.bookingReference,
   };
 }
 

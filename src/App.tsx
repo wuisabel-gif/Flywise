@@ -6,28 +6,41 @@ import { FlightRow } from "./components/FlightRow";
 import { Header } from "./components/Header";
 import { SearchControls } from "./components/SearchControls";
 import { TripSummary } from "./components/TripSummary";
-import { mockOffers, originalBooking } from "./data/mockFlights";
 import { createBookingFromQuery, searchLiveFlights } from "./lib/flightSearch";
-import { findEquivalentFlights } from "./lib/matchingEngine";
 import type { EquivalentFlight, FlightSearchQuery, OriginalBooking, SearchPreferences } from "./types";
 
 type SortMode = "best" | "lowest-cost" | "earliest";
 
+function createInitialQuery(): FlightSearchQuery {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return {
+    origin: "LAX",
+    destination: "CPH",
+    departureDate: date.toISOString().slice(0, 10),
+    departureTime: "12:00",
+    passengerCount: 1,
+    airline: "SAS",
+    flightNumber: "SK 931",
+    bookingReference: "ABC123",
+    originalFare: 2269,
+    checkedBags: 2,
+  };
+}
+
 export default function App() {
-  const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + 30);
   const [preferences, setPreferences] = useState<SearchPreferences>({ flexibilityDays: 2, preferredCabin: "Business", maximumConnections: 1 });
-  const [query, setQuery] = useState<FlightSearchQuery>({ origin: "LAX", destination: "CPH", departureDate: futureDate.toISOString().slice(0, 10), passengerCount: 1 });
-  const [booking, setBooking] = useState<OriginalBooking>(originalBooking);
-  const [matches, setMatches] = useState<EquivalentFlight[]>(() => findEquivalentFlights(originalBooking, mockOffers, preferences));
+  const [query, setQuery] = useState<FlightSearchQuery>(createInitialQuery);
+  const [booking, setBooking] = useState<OriginalBooking>(() => createBookingFromQuery(query, preferences));
+  const [matches, setMatches] = useState<EquivalentFlight[]>([]);
   const [selectedId, setSelectedId] = useState<string | undefined>(matches[0]?.id);
   const [isSearching, setIsSearching] = useState(false);
-  const [tripExpanded, setTripExpanded] = useState(false);
+  const [tripExpanded, setTripExpanded] = useState(true);
   const [sortMode, setSortMode] = useState<SortMode>("best");
   const [copied, setCopied] = useState(false);
-  const [hasSearched, setHasSearched] = useState(true);
+  const [hasSearched, setHasSearched] = useState(false);
   const [searchError, setSearchError] = useState<string>();
-  const [resultSource, setResultSource] = useState<"demo" | "duffel" | undefined>("demo");
+  const [resultSource, setResultSource] = useState<"demo" | "duffel" | undefined>();
 
   const sortedMatches = useMemo(() => [...matches].sort((a, b) => {
     if (sortMode === "lowest-cost") return a.estimatedExchangeCost - b.estimatedExchangeCost;
@@ -36,6 +49,16 @@ export default function App() {
   }), [matches, sortMode]);
 
   const selectedFlight = matches.find((flight) => flight.id === selectedId);
+
+  const updateQuery = (next: FlightSearchQuery) => {
+    setQuery(next);
+    setBooking(createBookingFromQuery(next, preferences));
+  };
+
+  const updatePreferences = (next: SearchPreferences) => {
+    setPreferences(next);
+    setBooking(createBookingFromQuery(query, next));
+  };
 
   const runSearch = async () => {
     setIsSearching(true);
@@ -78,8 +101,8 @@ export default function App() {
     <>
       <Header />
       <main className="app-shell">
-        <TripSummary booking={booking} expanded={tripExpanded} onToggle={() => setTripExpanded((value) => !value)} />
-        <SearchControls preferences={preferences} query={query} onChange={setPreferences} onQueryChange={setQuery} onSearch={runSearch} isSearching={isSearching} />
+        <TripSummary booking={booking} query={query} expanded={tripExpanded} onQueryChange={updateQuery} onToggle={() => setTripExpanded((value) => !value)} />
+        <SearchControls preferences={preferences} onChange={updatePreferences} onSearch={runSearch} isSearching={isSearching} canSearch={query.origin.length === 3 && query.destination.length === 3 && Boolean(query.departureDate && query.departureTime && query.airline && query.flightNumber)} />
         {searchError && <div className="search-notice" role="alert"><strong>Live search unavailable</strong><span>{searchError}</span></div>}
         <div className="workspace" id="results">
           <section className="results" aria-labelledby="results-title">
