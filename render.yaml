@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: flywise-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run dev:server
+    healthCheckPath: /health
+    envVars:
+      - key: DUFFEL_ACCESS_TOKEN
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://wuisabel-gif.github.io

@@ -8,7 +8,9 @@ The repository includes:
 
 - A polished React/Vite passenger workspace.
 - A transparent scoring engine for schedule, exchange cost, cabin, baggage, routing, and rebooking likelihood.
-- Mock inventory behind provider-shaped data types, ready to replace with Duffel, Amadeus, or an airline/NDC adapter.
+- Editable airport/city, date, passenger, cabin, and flexibility search.
+- A secure Duffel adapter for real-time offers from its airline network, including American Airlines and hundreds of other carriers.
+- Demo inventory that is clearly labeled and never substituted for another route after a live-search failure.
 - An MCP Apps server with data-first search tools and a separate render tool for ChatGPT.
 - Unit tests for ranking, flexibility filtering, and agent-request generation.
 
@@ -20,6 +22,14 @@ npm run dev
 ```
 
 Open `http://127.0.0.1:5173`.
+
+### Enable live airline search
+
+1. Copy `.env.example` to `.env` and add a Duffel test or live access token.
+2. Run the API with `npm run dev:server`.
+3. Run the frontend with `VITE_FLYWISE_API_URL=http://127.0.0.1:3000 npm run dev`.
+
+The token is read only by the Express server and is never included in browser JavaScript. Flywise creates a Duffel offer request and normalizes the returned operating carrier, flights, routing, cabin, baggage, public price, and conditions before ranking the options.
 
 To build the widget and run the MCP server:
 
@@ -49,6 +59,10 @@ All tools are read-only and idempotent. Exchange costs are explicitly estimates 
 
 ## Production boundary
 
-This MVP is a decision assistant, not a universal ticket-exchange system. Live production results depend on the issuing carrier, fare rules, waiver policy, booking-class inventory, interline agreements, and servicing authority. Replace `src/data/mockFlights.ts` with provider adapters and retain the existing normalized `FlightOffer` boundary.
+GitHub Pages hosts only the frontend. Deploy `render.yaml` as a Render Blueprint (or deploy the same Node server elsewhere), set its `DUFFEL_ACCESS_TOKEN`, then add the backend URL as the GitHub repository variable `FLYWISE_API_URL`. The Pages workflow injects that URL at build time.
+
+Duffel publicly lists American Airlines and 300+ other airlines. Delta does not appear in Duffel's current public airline directory; full Delta shopping requires a separate approved Delta/GDS partnership. The provider boundary in `server/duffel.ts` is intentionally isolated so another authorized provider can be added without changing the Flywise UI or scoring engine.
+
+Flywise remains a decision assistant, not a universal ticket-exchange system. Search results are live public offers, but an existing ticket's exchange cost still depends on the issuing carrier, fare rules, waiver policy, booking-class inventory, interline agreements, and servicing authority. The UI therefore requires airline confirmation instead of presenting an unverified exchange price.
 
 The visual specification is stored at `design/flywise-concept.png`.
