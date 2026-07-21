@@ -35,10 +35,15 @@ export interface FlightOffer {
   cabin: Cabin;
   checkedBags: number;
   publicPrice: number;
+  currency?: string;
   estimatedExchangeCost: number;
+  exchangeEstimateAvailable?: boolean;
   exchangeConfidence: "high" | "medium" | "low";
   aircraft: string[];
   refundable: boolean;
+  originTimeZone?: string;
+  destinationTimeZone?: string;
+  source?: "demo" | "duffel";
 }
 
 export interface MatchBreakdown {
@@ -61,4 +66,17 @@ export interface SearchPreferences {
   flexibilityDays: 1 | 2 | 3;
   preferredCabin: Cabin;
   maximumConnections: number;
+}
+
+export interface FlightSearchQuery {
+  origin: string;
+  destination: string;
+  departureDate: string;
+  passengerCount: number;
+}
+
+export interface FlightSearchResponse {
+  booking: OriginalBooking;
+  matches: EquivalentFlight[];
+  provider: "duffel";
 }

@@ -1,23 +1,26 @@
 import { ChevronDown, Plane, XCircle } from "lucide-react";
 import { formatDate, formatTime } from "../lib/format";
+import { findAirport } from "../data/airports";
 import type { OriginalBooking } from "../types";
 
 interface Props { booking: OriginalBooking; expanded: boolean; onToggle: () => void }
 
 export function TripSummary({ booking, expanded, onToggle }: Props) {
+  const originTimeZone = findAirport(booking.origin)?.timeZone ?? "UTC";
+  const destinationTimeZone = findAirport(booking.destination)?.timeZone ?? "UTC";
   return (
     <section className="trip-summary" aria-labelledby="original-trip-title">
       <h2 id="original-trip-title">Original trip</h2>
       <div className="trip-summary__airport">
         <strong>{booking.origin}</strong>
         <span>{booking.originCity}</span>
-        <small>{formatDate(booking.departure, "America/Los_Angeles")} · {formatTime(booking.departure, "America/Los_Angeles")}</small>
+        <small>{formatDate(booking.departure, originTimeZone)} · {formatTime(booking.departure, originTimeZone)}</small>
       </div>
       <div className="trip-summary__route" aria-label="Flight route"><span /><Plane size={17} /><span /></div>
       <div className="trip-summary__airport">
         <strong>{booking.destination}</strong>
         <span>{booking.destinationCity}</span>
-        <small>{formatDate(booking.arrival, "Europe/Copenhagen")} · {formatTime(booking.arrival, "Europe/Copenhagen")}</small>
+        <small>{formatDate(booking.arrival, destinationTimeZone)} · {formatTime(booking.arrival, destinationTimeZone)}</small>
       </div>
       <div className="trip-summary__status">
         <span><XCircle size={17} /> Cancelled by airline</span>

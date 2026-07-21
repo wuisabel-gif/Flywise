@@ -25,7 +25,9 @@ export function scoreOffer(
   const departureDelta = hoursBetween(booking.departure, offer.departure);
   const arrivalDelta = hoursBetween(booking.arrival, offer.arrival);
   const schedule = clamp(100 - departureDelta * 7 - arrivalDelta * 3);
-  const exchangeCost = clamp(100 - (offer.estimatedExchangeCost / Math.max(booking.paidAmount, 1)) * 240);
+  const exchangeCost = offer.exchangeEstimateAvailable === false
+    ? 55
+    : clamp(100 - (offer.estimatedExchangeCost / Math.max(booking.paidAmount, 1)) * 240);
   const cabinDifference = cabinRank[offer.cabin] - cabinRank[preferences.preferredCabin];
   const cabin = cabinDifference >= 0 ? 100 : clamp(100 + cabinDifference * 38);
   const baggage = offer.checkedBags >= booking.checkedBags ? 100 : offer.checkedBags * 45;
@@ -66,7 +68,7 @@ export function scoreOffer(
 
   const warnings = [
     "Airline confirmation required",
-    ...(offer.exchangeConfidence !== "high" ? ["Exchange cost is an estimate"] : []),
+    ...(offer.exchangeEstimateAvailable === false ? ["Exchange cost requires airline confirmation"] : offer.exchangeConfidence !== "high" ? ["Exchange cost is an estimate"] : []),
     ...(offer.cabin !== booking.cabin ? ["Cabin differs from the original ticket"] : []),
   ];
 

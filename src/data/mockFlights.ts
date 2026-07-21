@@ -39,6 +39,9 @@ export const mockOffers: FlightOffer[] = [
     exchangeConfidence: "high",
     aircraft: ["Airbus A350-900"],
     refundable: true,
+    originTimeZone: "America/Los_Angeles",
+    destinationTimeZone: "Europe/Copenhagen",
+    source: "demo",
   },
   {
     id: "offer-lh457",
@@ -59,6 +62,9 @@ export const mockOffers: FlightOffer[] = [
     exchangeConfidence: "medium",
     aircraft: ["Boeing 789", "Airbus A321neo"],
     refundable: false,
+    originTimeZone: "America/Los_Angeles",
+    destinationTimeZone: "Europe/Copenhagen",
+    source: "demo",
   },
   {
     id: "offer-af65",
@@ -79,6 +85,9 @@ export const mockOffers: FlightOffer[] = [
     exchangeConfidence: "medium",
     aircraft: ["Boeing 777", "Airbus A220"],
     refundable: false,
+    originTimeZone: "America/Los_Angeles",
+    destinationTimeZone: "Europe/Copenhagen",
+    source: "demo",
   },
   {
     id: "offer-ba282",
@@ -99,5 +108,8 @@ export const mockOffers: FlightOffer[] = [
     exchangeConfidence: "low",
     aircraft: ["Airbus A380", "Airbus A320neo"],
     refundable: false,
+    originTimeZone: "America/Los_Angeles",
+    destinationTimeZone: "Europe/Copenhagen",
+    source: "demo",
   }
 ];

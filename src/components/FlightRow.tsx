@@ -10,14 +10,14 @@ export function FlightRow({ flight, rank, selected, onSelect }: Props) {
       <div className="flight-row__main">
         <span className="rank">{rank}</span>
         <div className="flight-row__itinerary">
-          <div><strong>{formatTime(flight.departure, "America/Los_Angeles")}</strong><span>{flight.origin}</span></div>
+          <div><strong>{formatTime(flight.departure, flight.originTimeZone ?? "UTC")}</strong><span>{flight.origin}</span></div>
           <div className="route-line"><small>{formatDuration(flight.durationMinutes)}</small><span><i /><ArrowRight size={16} /></span><small>{flight.connections === 0 ? "Nonstop" : `${flight.connections} stop`}</small></div>
-          <div><strong>{formatTime(flight.arrival, "Europe/Copenhagen")}</strong><span>{flight.destination} <sup>+1</sup></span></div>
+          <div><strong>{formatTime(flight.arrival, flight.destinationTimeZone ?? "UTC")}</strong><span>{flight.destination} <sup>+1</sup></span></div>
           <div className="carrier"><b>{flight.airlineCode}</b><span>{flight.airline}<small>{flight.flightNumbers.join(" · ")} · {flight.aircraft.join(" · ")}</small></span></div>
         </div>
         <div className="score"><strong>{flight.equivalenceScore}% match</strong></div>
-        <div className="price"><small>Estimated exchange cost</small><strong className="price--saving">{formatMoney(flight.estimatedExchangeCost)}</strong><span>Taxes & fees may apply</span></div>
-        <div className="price"><small>Public price</small><strong>{formatMoney(flight.publicPrice)}</strong><span>per passenger</span></div>
+        <div className="price"><small>Estimated exchange cost</small><strong className="price--saving">{flight.exchangeEstimateAvailable === false ? "Confirm" : formatMoney(flight.estimatedExchangeCost, flight.currency)}</strong><span>{flight.exchangeEstimateAvailable === false ? "Ask the ticketing airline" : "Taxes & fees may apply"}</span></div>
+        <div className="price"><small>Public price</small><strong>{formatMoney(flight.publicPrice, flight.currency)}</strong><span>per passenger</span></div>
         <button className={`button ${selected ? "button--primary" : "button--outline"}`} onClick={onSelect}>{selected ? "Selected" : "Select this flight"}</button>
       </div>
       <div className="flight-row__facts">

@@ -12,9 +12,9 @@ export function ComparisonPanel({ booking, flight, copied, onCopy }: Props) {
     <aside className="comparison" aria-label="Selected flight comparison">
       <div className="comparison__heading"><div><small>Selected flight</small><strong>{flight.airline} <span>{flight.flightNumbers[0]}</span></strong></div><b>{flight.equivalenceScore}% match</b></div>
       <div className="comparison__route">
-        <div><strong>{formatTime(flight.departure, "America/Los_Angeles")}</strong><span>{flight.origin}</span></div>
+        <div><strong>{formatTime(flight.departure, flight.originTimeZone ?? "UTC")}</strong><span>{flight.origin}</span></div>
         <div><small>{formatDuration(flight.durationMinutes)}</small><i /><small>{flight.connections === 0 ? "Nonstop" : `${flight.connections} stop`}</small></div>
-        <div><strong>{formatTime(flight.arrival, "Europe/Copenhagen")}</strong><span>{flight.destination} <sup>+1</sup></span></div>
+        <div><strong>{formatTime(flight.arrival, flight.destinationTimeZone ?? "UTC")}</strong><span>{flight.destination} <sup>+1</sup></span></div>
       </div>
       <div className="comparison__section"><h3>Why it matches</h3><ul>{flight.reasons.slice(0, 5).map((reason) => <li key={reason}><Check size={16} /> {reason}</li>)}</ul></div>
       <div className="comparison__section agent-request">
