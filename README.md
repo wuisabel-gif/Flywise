@@ -2,13 +2,13 @@
 
 Live website: <https://wuisabel-gif.github.io/Flywise/>
 
-Flywise is a TypeScript MVP for disruption recovery. It ranks replacement flights by practical equivalence to a traveler's original ticket instead of treating the current public fare as the whole answer.
+Flywise is a TypeScript MVP for disruption recovery. It ranks replacement flights by practical equivalence to a traveler's original ticket instead of treating the current public fare as the whole answer. Live flight inventory is searched through [Duffel](https://duffel.com/), with a server-side integration that keeps the Duffel access token out of the browser.
 
 The repository includes:
 
 - A polished React/Vite passenger workspace.
 - A transparent scoring engine for schedule, exchange cost, cabin, baggage, routing, and rebooking likelihood.
-- Editable airport/city, date, passenger, cabin, and flexibility search.
+- Editable original-flight details, including route, date, airline, flight number, fare, baggage, and passengers.
 - A secure Duffel adapter for real-time offers from its airline network, including American Airlines and hundreds of other carriers.
 - Demo inventory that is clearly labeled and never substituted for another route after a live-search failure.
 - An MCP Apps server with data-first search tools and a separate render tool for ChatGPT.
@@ -30,6 +30,26 @@ Open `http://127.0.0.1:5173`.
 3. Run the frontend with `VITE_FLYWISE_API_URL=http://127.0.0.1:3000 npm run dev`.
 
 The token is read only by the Express server and is never included in browser JavaScript. Flywise creates a Duffel offer request and normalizes the returned operating carrier, flights, routing, cabin, baggage, public price, and conditions before ranking the options.
+
+## Duffel integration
+
+Flywise uses the [Duffel Flights API](https://duffel.com/docs/api/overview/flights-key-concepts) as its first live inventory provider. The server sends the traveler's route, departure date, passenger count, cabin, and maximum connections to Duffel's [Offer Requests API](https://duffel.com/docs/api/v2/offer-requests). Returned offers are converted into Flywise's normalized `FlightOffer` model before the equivalence engine ranks them.
+
+```text
+Flywise website → Flywise Express API → Duffel → airline offers
+                                      ↓
+                         normalize and equivalence-rank
+```
+
+Required configuration:
+
+| Variable | Used by | Purpose |
+|---|---|---|
+| `DUFFEL_ACCESS_TOKEN` | Express server | Authenticates private requests to Duffel. Never expose this through a `VITE_` variable. |
+| `VITE_FLYWISE_API_URL` | Browser build | Points the website to the deployed Flywise Express API. |
+| `ALLOWED_ORIGINS` | Express server | Restricts which browser origins may call the API. |
+
+Duffel results provide live public offers and prices. They do **not** by themselves confirm what an airline will charge to exchange an existing ticket. Flywise therefore labels the exchange cost as requiring airline confirmation while still comparing the offer's schedule, cabin, baggage, routing, and public price.
 
 To build the widget and run the MCP server:
 
