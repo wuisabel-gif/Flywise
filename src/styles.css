@@ -40,6 +40,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .app-shell { max-width: 1400px; padding: 20px 32px 28px; margin: 0 auto; }
 .trip-summary { display: grid; grid-template-columns: 130px 150px 100px 150px minmax(230px, 1fr) auto; align-items: center; gap: 16px; min-height: 116px; padding: 18px 20px; border: 1px solid var(--border-strong); border-radius: 11px; }
 .trip-summary h2 { align-self: start; margin: 3px 0 0; font-size: 15px; font-weight: 600; }
+.trip-summary__intro { grid-column: 2 / -1; margin: 2px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.trip-summary--empty { align-items: start; }
 .trip-summary__airport { display: flex; flex-direction: column; text-align: center; gap: 3px; }
 .trip-summary__airport strong { font: 700 29px/1 "Manrope", sans-serif; letter-spacing: .8px; }
 .trip-summary__airport span { font-size: 13px; }
@@ -131,6 +133,7 @@ footer { margin-top: 10px; min-height: 48px; display: flex; align-items: center;
 @media (max-width: 650px) {
   .header { height: 60px; }.header__inner { padding: 0 16px; }.brand { font-size: 22px; }.brand__mark { width: 30px; }
   .app-shell { padding: 14px 14px 24px; }.trip-summary { padding: 16px 13px; gap: 13px 8px; }.trip-summary__airport strong { font-size: 24px; }.trip-summary__airport small { font-size: 10px; }.trip-summary__status { grid-column: 1 / -1; }.trip-summary__toggle { grid-column: 1 / -1; width: 100%; }
+  .trip-summary--empty h2, .trip-summary--empty .trip-summary__intro { grid-column: 1 / -1; }
   .original-trip-form { grid-template-columns: 1fr 1fr; gap: 11px 9px; }.original-trip-form label:nth-last-of-type(-n+2) { grid-column: auto; }
   .search-controls { display: block; }.control-group { padding: 14px; border-bottom: 1px solid var(--border); }.search-action { display: block; padding: 14px; }.search-action .button { min-width: 0; width: 100%; }.search-action p { margin-top: 10px; }
   .route-search { display: grid; grid-template-columns: 1fr 1fr; border-radius: 11px 11px 0 0; }.route-search .control-group { padding: 12px; }.search-notice { flex-direction: column; }

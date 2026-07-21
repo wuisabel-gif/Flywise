@@ -3,10 +3,10 @@ import { formatDuration, formatTime } from "../lib/format";
 import { generateAgentRequest } from "../lib/matchingEngine";
 import type { EquivalentFlight, OriginalBooking } from "../types";
 
-interface Props { booking: OriginalBooking; flight: EquivalentFlight | undefined; copied: boolean; onCopy: (text: string) => void }
+interface Props { booking: OriginalBooking | undefined; flight: EquivalentFlight | undefined; copied: boolean; onCopy: (text: string) => void }
 
 export function ComparisonPanel({ booking, flight, copied, onCopy }: Props) {
-  if (!flight) return <aside className="comparison comparison--empty"><p>Select a replacement to see why it matches.</p></aside>;
+  if (!flight || !booking) return <aside className="comparison comparison--empty"><p>Select a replacement to see why it matches.</p></aside>;
   const request = generateAgentRequest(booking, flight);
   return (
     <aside className="comparison" aria-label="Selected flight comparison">

@@ -7,31 +7,28 @@ import { Header } from "./components/Header";
 import { SearchControls } from "./components/SearchControls";
 import { TripSummary } from "./components/TripSummary";
 import { createBookingFromQuery, searchLiveFlights } from "./lib/flightSearch";
-import type { EquivalentFlight, FlightSearchQuery, OriginalBooking, SearchPreferences } from "./types";
+import type { EquivalentFlight, FlightSearchQuery, SearchPreferences } from "./types";
 
 type SortMode = "best" | "lowest-cost" | "earliest";
 
 function createInitialQuery(): FlightSearchQuery {
-  const date = new Date();
-  date.setDate(date.getDate() + 30);
   return {
-    origin: "LAX",
-    destination: "CPH",
-    departureDate: date.toISOString().slice(0, 10),
-    departureTime: "12:00",
+    origin: "",
+    destination: "",
+    departureDate: "",
+    departureTime: "",
     passengerCount: 1,
-    airline: "SAS",
-    flightNumber: "SK 931",
-    bookingReference: "ABC123",
-    originalFare: 2269,
-    checkedBags: 2,
+    airline: "",
+    flightNumber: "",
+    bookingReference: "",
+    originalFare: 0,
+    checkedBags: 0,
   };
 }
 
 export default function App() {
   const [preferences, setPreferences] = useState<SearchPreferences>({ flexibilityDays: 2, preferredCabin: "Business", maximumConnections: 1 });
   const [query, setQuery] = useState<FlightSearchQuery>(createInitialQuery);
-  const [booking, setBooking] = useState<OriginalBooking>(() => createBookingFromQuery(query, preferences));
   const [matches, setMatches] = useState<EquivalentFlight[]>([]);
   const [selectedId, setSelectedId] = useState<string | undefined>(matches[0]?.id);
   const [isSearching, setIsSearching] = useState(false);
@@ -49,35 +46,24 @@ export default function App() {
   }), [matches, sortMode]);
 
   const selectedFlight = matches.find((flight) => flight.id === selectedId);
-
-  const updateQuery = (next: FlightSearchQuery) => {
-    setQuery(next);
-    setBooking(createBookingFromQuery(next, preferences));
-  };
-
-  const updatePreferences = (next: SearchPreferences) => {
-    setPreferences(next);
-    setBooking(createBookingFromQuery(query, next));
-  };
+  const queryIsComplete = query.origin.length === 3 && query.destination.length === 3 && Boolean(query.departureDate && query.departureTime && query.airline && query.flightNumber);
+  const booking = useMemo(() => queryIsComplete ? createBookingFromQuery(query, preferences) : undefined, [preferences, query, queryIsComplete]);
 
   const runSearch = async () => {
+    if (!booking) return;
     setIsSearching(true);
     setHasSearched(true);
     setSearchError(undefined);
-    setBooking(createBookingFromQuery(query, preferences));
     setResultSource(undefined);
     try {
       const hostResult = await window.openai?.callTool?.("search_equivalent_flights", { query, preferences });
       const next = hostResult?.structuredContent?.matches as EquivalentFlight[] | undefined;
-      const hostBooking = hostResult?.structuredContent?.originalBooking as OriginalBooking | undefined;
       if (next) {
         setMatches(next);
-        if (hostBooking) setBooking(hostBooking);
         setSelectedId(next[0]?.id);
         setResultSource("duffel");
       } else {
         const result = await searchLiveFlights(query, preferences);
-        setBooking(result.booking);
         setMatches(result.matches);
         setSelectedId(result.matches[0]?.id);
         setResultSource(result.provider);
@@ -101,8 +87,8 @@ export default function App() {
     <>
       <Header />
       <main className="app-shell">
-        <TripSummary booking={booking} query={query} expanded={tripExpanded} onQueryChange={updateQuery} onToggle={() => setTripExpanded((value) => !value)} />
-        <SearchControls preferences={preferences} onChange={updatePreferences} onSearch={runSearch} isSearching={isSearching} canSearch={query.origin.length === 3 && query.destination.length === 3 && Boolean(query.departureDate && query.departureTime && query.airline && query.flightNumber)} />
+        <TripSummary booking={booking} query={query} expanded={tripExpanded} onQueryChange={setQuery} onToggle={() => setTripExpanded((value) => !value)} />
+        <SearchControls preferences={preferences} onChange={setPreferences} onSearch={runSearch} isSearching={isSearching} canSearch={queryIsComplete} />
         {searchError && <div className="search-notice" role="alert"><strong>Live search unavailable</strong><span>{searchError}</span></div>}
         <div className="workspace" id="results">
           <section className="results" aria-labelledby="results-title">
