@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+*.tsbuildinfo
+
+# Local visual QA captures (the accepted design concept remains tracked).
+design/flywise-implementation-*.png
