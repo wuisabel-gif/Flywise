@@ -4,6 +4,8 @@ Live website: <https://wuisabel-gif.github.io/Flywise/>
 
 Flywise is a TypeScript MVP for disruption recovery. It ranks replacement flights by practical equivalence to a traveler's original ticket instead of treating the current public fare as the whole answer. Live flight inventory is searched through [Duffel](https://duffel.com/), with a server-side integration that keeps the Duffel access token out of the browser.
 
+Want to help? Read the [contributing guide](CONTRIBUTING.md) and choose an issue labeled `good first issue` or `help wanted`.
+
 The repository includes:
 
 - A polished React/Vite passenger workspace.
